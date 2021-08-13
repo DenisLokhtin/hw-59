@@ -6,41 +6,57 @@ import { nanoid } from 'nanoid'
 
 class App extends Component {
     state = {
-        posts: [
-            // {movie: 'ssss', id: 1},
-        ],
+        posts: [],
         inputValue: '',
-        cardInputValue: '',
     };
 
     setState = this.setState.bind(this);
 
     addPost = () => {
-        console.log('click 1')
         if (this.state.inputValue !== '') {
-            const posts = [...this.state.posts, []];
-            posts.push({movie: this.state.inputValue, id: this.state.posts.length,});
-            this.setState(posts);
+            const posts = [...this.state.posts];
+            posts.push({movie: this.state.inputValue, id: nanoid(), number: this.state.posts.length});
+            this.setState({posts});
             this.setState({inputValue: ''});
-            console.log('click 2')
-            console.log(this.state.posts.length)
         }
     };
 
+    removePost = index => {
+        const posts = [...this.state.posts];
+        posts.splice(index, 1);
+        this.setState({posts});
+    };
+
+    changeInputValue(value) {
+        this.setState({inputValue: value})
+    }
+
+    changeCardInputValue(value, index) {
+        const posts = [...this.state.posts];
+        const updated = posts[index];
+        updated.movie = value
+        posts[index] = updated
+        this.setState({posts})
+    }
 
     render() {
-        // console.log(this.state.posts[0].movie)
-        // console.log(this.state.cardInputValue)
         return (
             <div className="container">
                 <div className="container-inner">
-                    <Input inputValue={this.state.inputValue} add={this.addPost}  set={this.setState} />
+                    <Input
+                        inputValue={this.state.inputValue}
+                        add={this.addPost}
+                        set={(value) => this.changeInputValue(value)}
+                    />
                     <p className="onWatch">To watch list:</p>
-                    {this.state.posts.map(post => (
+                    {this.state.posts.map((post, index) => (
                         <Card
                             key={post.id}
+                            index={index}
+                            number={index + 1}
                             movie={post.movie}
-                            set={this.setState}
+                            set={(value) => this.changeCardInputValue(value, index)}
+                            remove={() => this.removePost(index)}
                         />
                     ))}
                 </div>
